@@ -15,15 +15,35 @@
                 </div>
                 <div class="card-body">
                     <form id="execForm">
-                        <div class="mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="host" class="form-label">Host</label>
+                                <input type="text" class="form-control" id="host" name="host" placeholder="Ex: 192.168.0.10">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="port" class="form-label">Porta</label>
+                                <input type="number" class="form-control" id="port" name="port" placeholder="22">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="user" class="form-label">Usuário</label>
+                                <input type="text" class="form-control" id="user" name="user" placeholder="">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="mt-4 mb-3">
                             <label for="script" class="form-label">Selecione o Script</label>
                             <select class="form-select" id="script" name="script" required>
                                 <option value="">-- Selecione um script --</option>
                                 <option th:each="script : ${scripts}" th:value="${script}" th:text="${script}"></option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-success">Executar Script</button>
+                        <div class="mb-3 d-flex gap-2">
+                            <button type="submit" id="btnExecutar" class="btn btn-success">Executar Script</button>
+                            <button type="button" id="btnTestar" class="btn btn-outline-primary">Testar conexão</button>
                             <a href="/sshservice/web" class="btn btn-secondary">Voltar</a>
                         </div>
                     </form>
@@ -39,10 +59,17 @@
 </div>
 
 <script>
+const btnExecutar = document.getElementById('btnExecutar');
+const btnTestar = document.getElementById('btnTestar');
+
 document.getElementById('execForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const script = document.getElementById('script').value;
+    const host = document.getElementById('host').value;
+    const port = document.getElementById('port').value;
+    const user = document.getElementById('user').value;
+    const password = document.getElementById('password').value;
     if (!script) {
         alert('Por favor, selecione um script!');
         return;
@@ -53,6 +80,8 @@ document.getElementById('execForm').addEventListener('submit', function(e) {
     
     resultado.style.display = 'block';
     output.textContent = 'Executando script...';
+    btnExecutar.disabled = true;
+    btnTestar.disabled = true;
     
     fetch('/sshservice/web/executar', {
         method: 'POST',
@@ -60,13 +89,62 @@ document.getElementById('execForm').addEventListener('submit', function(e) {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'script=' + encodeURIComponent(script)
+            + '&host=' + encodeURIComponent(host || '')
+            + '&port=' + encodeURIComponent(port || '')
+            + '&user=' + encodeURIComponent(user || '')
+            + '&password=' + encodeURIComponent(password || '')
     })
     .then(response => response.text())
     .then(data => {
-        output.textContent = data;
+        const text = (data || '').trim();
+        output.textContent = text.length > 0
+            ? text
+            : 'Executado com sucesso, mas o script não retornou saída.';
     })
     .catch(error => {
         output.textContent = 'Erro: ' + error.message;
+    })
+    .finally(() => {
+        btnExecutar.disabled = false;
+        btnTestar.disabled = false;
+    });
+});
+
+btnTestar.addEventListener('click', function() {
+    const host = document.getElementById('host').value;
+    const port = document.getElementById('port').value;
+    const user = document.getElementById('user').value;
+    const password = document.getElementById('password').value;
+
+    const resultado = document.getElementById('resultado');
+    const output = document.getElementById('output');
+    
+    resultado.style.display = 'block';
+    output.textContent = 'Testando conexão...';
+    btnExecutar.disabled = true;
+    btnTestar.disabled = true;
+
+    fetch('/sshservice/web/testar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body:
+            'host=' + encodeURIComponent(host || '')
+            + '&port=' + encodeURIComponent(port || '')
+            + '&user=' + encodeURIComponent(user || '')
+            + '&password=' + encodeURIComponent(password || '')
+    })
+    .then(response => response.text())
+    .then(data => {
+        output.textContent = (data || '').trim();
+    })
+    .catch(error => {
+        output.textContent = 'Erro: ' + error.message;
+    })
+    .finally(() => {
+        btnExecutar.disabled = false;
+        btnTestar.disabled = false;
     });
 });
 </script>
