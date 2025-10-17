@@ -14,13 +14,15 @@ java {
     }
 }
 
+// sourceSets exclusion for 'disabled' removed to include all sources
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // implementation 'org.springframework.boot:spring-boot-starter-data-jpa'  // Temporariamente desabilitado
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Driver MySQL

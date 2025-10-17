@@ -1,15 +1,18 @@
 package org.example.projetojava;
 
+import org.example.projetojava.config.SshProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication(scanBasePackages = {
         "org.example.projetojava",       // pacote base do projeto
-        "org.example.projetojava.sshweb",    // controllers da interface web SSH
-        "org.example.projetojava.sshservice", // serviços SSH
-        "org.example.projetojava.controller",  // caso tenha outros controllers
+        "sshweb",                        // controllers da interface web SSH
+        "sshservice",                    // serviços SSH
+        "sshcontroller",                 // controllers REST SSH
         "org.example.projetojava.conexweb"    // HomeController
 })
+@EnableConfigurationProperties(SshProperties.class)
 public class ProjetoJavaApplication {
 
     public static void main(String[] args) {
