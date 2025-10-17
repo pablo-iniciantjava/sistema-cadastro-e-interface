@@ -14,7 +14,13 @@ java {
     }
 }
 
-// sourceSets exclusion for 'disabled' removed to include all sources
+sourceSets {
+    main {
+        java {
+            exclude '**/disabled/**'
+        }
+    }
+}
 
 repositories {
     mavenCentral()
