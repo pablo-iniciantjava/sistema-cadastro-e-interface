@@ -3,10 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <title>Executar Scripts SSH</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h2>Execução de Scripts</h2>
-<p>Aqui você vai colocar o formulário de execução de scripts.</p>
-<a href="/sshservice/web">Voltar</a>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-success">💻 Execução de Scripts SSH</h2>
+                </div>
+                <div class="card-body">
+                    <form id="execForm">
+                        <div class="mb-3">
+                            <label for="script" class="form-label">Selecione o Script</label>
+                            <select class="form-select" id="script" name="script" required>
+                                <option value="">-- Selecione um script --</option>
+                                <option th:each="script : ${scripts}" th:value="${script}" th:text="${script}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success">Executar Script</button>
+                            <a href="/sshservice/web" class="btn btn-secondary">Voltar</a>
+                        </div>
+                    </form>
+                    
+                    <div id="resultado" class="mt-4" style="display: none;">
+                        <h5>Resultado da Execução:</h5>
+                        <pre id="output" class="bg-dark text-light p-3 rounded" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('execForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const script = document.getElementById('script').value;
+    if (!script) {
+        alert('Por favor, selecione um script!');
+        return;
+    }
+    
+    const resultado = document.getElementById('resultado');
+    const output = document.getElementById('output');
+    
+    resultado.style.display = 'block';
+    output.textContent = 'Executando script...';
+    
+    fetch('/sshservice/web/executar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'script=' + encodeURIComponent(script)
+    })
+    .then(response => response.text())
+    .then(data => {
+        output.textContent = data;
+    })
+    .catch(error => {
+        output.textContent = 'Erro: ' + error.message;
+    });
+});
+</script>
 </body>
 </html>

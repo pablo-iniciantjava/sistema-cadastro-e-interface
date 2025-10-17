@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "org.example.projetojava",       // pacote base do projeto
         "org.example.projetojava.sshweb",    // controllers da interface web SSH
         "org.example.projetojava.sshservice", // serviços SSH
-        "org.example.projetojava.controller"  // caso tenha outros controllers
+        "org.example.projetojava.controller",  // caso tenha outros controllers
+        "org.example.projetojava.conexweb"    // HomeController
 })
 public class ProjetoJavaApplication {
 
